@@ -25,6 +25,8 @@
 package com.naijun.rhino;
 
 import org.mozilla.javascript.*;
+import org.mozilla.javascript.typedarrays.NativeTypedArrayView;
+import org.mozilla.javascript.typedarrays.NativeUint8Array;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -125,13 +127,22 @@ public class NativeJava extends IdScriptableObject {
         } else if (objType instanceof String) {
             targetClass = type((String) objType);
         } else {
-            throw ScriptRuntime.typeError("ERROR");
+            throw ScriptRuntime.typeError("objType is not the expected type");
         }
 
         if (targetClass.isArray()) {
             try {
+                if (obj instanceof NativeTypedArrayView<?>) {
+                    if (targetClass == byte[].class) {
+                        return ((NativeTypedArrayView<?>) obj).getBuffer().getBuffer();
+                    } else {
+                        throw ScriptRuntime.typeError("Not Implement");
+                    }
+                }
                 return Context.jsToJava(obj, targetClass);
             } catch (final Exception exp) {
+                exp.printStackTrace();
+                new NativeUint8Array().getBuffer().getBuffer();
                 throw ScriptRuntime.typeError("failed");
             }
         }
@@ -243,6 +254,10 @@ public class NativeJava extends IdScriptableObject {
                 } catch (ClassNotFoundException e) {
                     return null;
                 }
+            }
+
+            case Id_typeName: {
+                return typeName(args[0]);
             }
 
             case Id_to: {

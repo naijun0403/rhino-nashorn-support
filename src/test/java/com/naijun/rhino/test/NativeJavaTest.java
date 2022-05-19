@@ -107,4 +107,18 @@ public class NativeJavaTest {
         assert result.toString().contains("NativeJavaObject");
     }
 
+    @Test
+    public void testJavaTo2() {
+        Object result =
+                cx.evaluateString(
+                        scope,
+                        "var test = Java.to(new Uint8Array('12', '12'), Java.type('byte[]'));\n" +
+                                "test.getClass()",
+                        "test",
+                        1,
+                        null);
+
+        assert result.toString().contains("NativeJavaObject");
+    }
+
 }
