@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.ScriptableObject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,6 +91,20 @@ public class NativeJavaTest {
                         null);
 
         assertEquals(true, result);
+    }
+
+    @Test
+    public void testJavaTo() {
+        Object result =
+                cx.evaluateString(
+                        scope,
+                        "var test = Java.to(['123', '123'], Java.type('java.lang.String[]'));\n" +
+                                "test",
+                        "test",
+                        1,
+                        null);
+
+        assertEquals(new String[] {"123", "123"}, result);
     }
 
 }

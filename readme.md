@@ -7,3 +7,4 @@ Supports `nashorn` objects which are not supported by `Rhino`.
 - [x] isJavaObject
 - [x] isJavaMethod
 - [x] isScriptObject
+- [x] to

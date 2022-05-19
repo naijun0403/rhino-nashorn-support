@@ -100,6 +100,45 @@ public class NativeJava extends IdScriptableObject {
         return obj instanceof ScriptableObject;
     }
 
+    public static Object typeName(Object clazz) {
+        if (clazz instanceof Class<?>) {
+            return ((Class<?>) clazz).getName();
+        } else {
+            return Undefined.instance;
+        }
+    }
+
+    public static Object to(Object obj, Object objType) throws ClassNotFoundException {
+        if (obj == null) {
+            return null;
+        }
+
+        if (!(obj instanceof ScriptableObject)) {
+            throw ScriptRuntime.typeError("not an Object");
+        }
+
+        Class<?> targetClass;
+        if (Undefined.isUndefined(objType)) {
+            targetClass = Object[].class;
+        } else if (objType instanceof NativeJavaClass) {
+            targetClass = ((NativeJavaClass) objType).getClassObject();
+        } else if (objType instanceof String) {
+            targetClass = type((String) objType);
+        } else {
+            throw ScriptRuntime.typeError("ERROR");
+        }
+
+        if (targetClass.isArray()) {
+            try {
+                return Context.jsToJava(obj, targetClass);
+            } catch (final Exception exp) {
+                throw ScriptRuntime.typeError("failed");
+            }
+        }
+
+        throw ScriptRuntime.typeError("failed to Java.to");
+    }
+
     @Override
     public String getClassName() {
         return TO_STRING_TAG;
@@ -201,6 +240,14 @@ public class NativeJava extends IdScriptableObject {
                     String className = ScriptRuntime.toString(args, 0);
                     Class<?> type = type(className);
                     return wrapFactory.wrapJavaClass(Context.getCurrentContext(), scope, type);
+                } catch (ClassNotFoundException e) {
+                    return null;
+                }
+            }
+
+            case Id_to: {
+                try {
+                    return to(args[0], args[1]);
                 } catch (ClassNotFoundException e) {
                     return null;
                 }
