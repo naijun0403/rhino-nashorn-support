@@ -99,12 +99,12 @@ public class NativeJavaTest {
                 cx.evaluateString(
                         scope,
                         "var test = Java.to(['123', '123'], Java.type('java.lang.String[]'));\n" +
-                                "test",
+                                "test.getClass()",
                         "test",
                         1,
                         null);
 
-        assertEquals(new String[] {"123", "123"}, result);
+        assert result.toString().contains("NativeJavaObject");
     }
 
 }
